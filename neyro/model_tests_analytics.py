@@ -15,7 +15,6 @@ from tqdm import tqdm
 # Создаем директорию для результатов
 os.makedirs('results', exist_ok=True)
 
-# Используем GPU, если он доступен
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Используется устройство: {device}")
 

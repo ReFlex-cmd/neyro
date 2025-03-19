@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import matplotlib
+matplotlib.use('TkAgg')  # or 'Qt5Agg'
 import matplotlib.pyplot as plt
 import cv2
 import random
