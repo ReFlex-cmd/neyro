@@ -74,7 +74,7 @@ def draw_oval(img):
 def draw_semicircle(img):
     center = (random.randint(40, 60), random.randint(40, 60))
     radius = random.randint(15, 40)
-    angle = random.choice([0, 90, 180, 270])  # Случайный поворот
+    angle = random.choice([0])  # Случайный поворот
     cv2.ellipse(img, center, (radius, radius), angle, 0, 180, 255, THICKNESS)
     if angle == 0:
         cv2.line(img, (center[0] - radius, center[1]), (center[0] + radius, center[1]), 255, THICKNESS)
