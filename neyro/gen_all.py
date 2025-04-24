@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # Размер изображения
 IMG_SIZE = 100
 MARGIN = 10  # Отступ от границ
-THICKNESS = 1  # Толщина обводки
+THICKNESS = 2  # Толщина обводки
 
 def draw_circle(img):
     center = (random.randint(30, 70), random.randint(30, 70))
