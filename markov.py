@@ -1,34 +1,63 @@
-import networkx as nx
 import matplotlib.pyplot as plt
-import matplotlib
-matplotlib.use('TkAgg')  # or 'Qt5Agg'
+import numpy as np
+import pandas as pd
 
-
-# Определяем состояния
-states = ["S0", "S1", "S2", "S3"]
-
-# Определяем вероятности переходов (ребра графа)
-transitions = {
-    ("S0", "S1"): 0.3,
-    ("S0", "S2"): 0.7,
-    ("S1", "S3"): 0.4,
-    ("S1", "S0"): 0.6,
-    ("S2", "S3"): 1.0,
-    ("S3", "S0"): 1.0,
+# Данные из таблицы
+data = {
+    'β': [0.1, 0.1, 0.1, 0.3, 0.3, 0.3, 0.5, 0.5, 0.5, 0.7, 0.7, 0.7, 0.9, 0.9, 0.9],
+    'Структура': ['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'c'],
+    'P_отк': [0.009, 0.002, 0.009, 0.070, 0.033, 0.070, 0.167, 0.111, 0.167, 0.273, 0.233, 0.273, 0.388, 0.378, 0.388],
+    'K_з': [0.198, 0.200, 0.099, 0.559, 0.572, 0.280, 0.833, 0.833, 0.417, 1.075, 1.039, 0.537, 1.281, 1.205, 0.640],
+    'n_о': [0.018, 0.002, 0.009, 0.141, 0.033, 0.070, 0.333, 0.111, 0.167, 0.545, 0.233, 0.273, 0.775, 0.378, 0.388],
+    'j': [0.216, 0.201, 0.108, 0.700, 0.605, 0.350, 1.167, 0.944, 0.583, 1.620, 1.272, 0.810, 2.056, 1.583, 1.028],
+    'T_ож': [0.091, 0.008, 0.045, 0.231, 0.052, 0.115, 0.333, 0.125, 0.167, 0.412, 0.220, 0.206, 0.474, 0.331, 0.237],
+    'T_с': [1.091, 1.008, 0.545, 1.231, 1.052, 0.615, 1.333, 1.125, 0.667, 1.412, 1.220, 0.706, 1.474, 1.331, 0.737]
 }
 
-# Создаем граф
-G = nx.DiGraph()
+df = pd.DataFrame(data)
 
-# Добавляем рёбра с весами
-for (start, end), prob in transitions.items():
-    G.add_edge(start, end, weight=prob)
+# Уникальные значения бета для оси X
+betas = df['β'].unique()
 
-# Рисуем граф
-pos = nx.spring_layout(G)  # Определяем расположение узлов
-plt.figure(figsize=(6, 6))
-nx.draw(G, pos, with_labels=True, node_color='lightblue', edge_color='gray', node_size=2000, font_size=12)
-edge_labels = {(start, end): f"{prob:.2f}" for (start, end), prob in transitions.items()}
-nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_size=10)
-plt.title("Граф переходов Марковского процесса")
-plt.show()
+# Цвета и маркеры для структур
+colors = {'a': 'blue', 'b': 'red', 'c': 'green'}
+markers = {'a': 'o', 'b': 's', 'c': '^'}
+labels = {'a': 'Структура "a" (2x M/M/1/1)',
+          'b': 'Структура "b" (M/M/2/1)',
+          'c': 'Структура "c" (M/M/1/1 агрег.)'}
+
+# Список показателей для построения графиков
+indicators = ['P_отк', 'K_з', 'n_о', 'j', 'T_ож', 'T_с']
+indicator_labels_rus = {
+    'P_отк': 'Вероятность отказа (P_отк)',
+    'K_з': 'Ср. число занятых каналов (K_з)',
+    'n_о': 'Ср. длина очереди (n_о)',
+    'j': 'Ср. число заявок в системе (j)',
+    'T_ож': 'Ср. время ожидания (T_ож, в 1/μ)',
+    'T_с': 'Ср. время в системе (T_с, в 1/μ)'
+}
+
+plt.style.use('seaborn-v0_8-whitegrid') # Используем стиль для лучшей читаемости
+
+# Создание графиков для каждого показателя
+for indicator in indicators:
+    plt.figure(figsize=(10, 6)) # Размер фигуры
+
+    for struct_type in ['a', 'b', 'c']:
+        # Фильтруем данные для текущей структуры
+        struct_data = df[df['Структура'] == struct_type]
+        plt.plot(struct_data['β'], struct_data[indicator],
+                 label=labels[struct_type],
+                 color=colors[struct_type],
+                 marker=markers[struct_type],
+                 linewidth=2, # Толщина линии
+                 markersize=6) # Размер маркера
+
+    plt.xlabel('Нагрузка (β = λ/μ)', fontsize=12) # Метка оси X
+    plt.ylabel(indicator_labels_rus[indicator], fontsize=12) # Метка оси Y
+    plt.title(f'Зависимость показателя "{indicator_labels_rus[indicator]}" от нагрузки β', fontsize=14) # Заголовок
+    plt.xticks(betas) # Установка явных меток на оси X
+    plt.legend(fontsize=10) # Легенда
+    plt.grid(True) # Сетка
+    plt.tight_layout() # Автоматическая корректировка полей
+    plt.show() # Показать график

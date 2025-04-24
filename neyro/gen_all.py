@@ -1,8 +1,6 @@
 import cv2
 import numpy as np
 import random
-import matplotlib
-matplotlib.use('TkAgg')  # or 'Qt5Agg'
 import matplotlib.pyplot as plt
 
 # Размер изображения
@@ -45,11 +43,11 @@ def draw_star(img):
     cv2.polylines(img, [pts], isClosed=True, color=255, thickness=THICKNESS)
 
 def draw_trapezoid(img):
-    x1 = random.randint(10, 60)
-    x2 = x1 + random.randint(10, 25)
+    x1 = random.randint(15, 35)
+    x2 = x1 + random.randint(20, 30)
     y1 = random.randint(MARGIN, IMG_SIZE // 2)
-    y2 = y1 + random.randint(20, 40)
-    x3, x4 = x1 - random.randint(5, 15), x2 + random.randint(5, 15)
+    y2 = y1 + random.randint(20, 45)
+    x3, x4 = x1 - random.randint(5, 15), x2 + random.randint(7, 25)
     pts = np.array([(x1, y1), (x2, y1), (x4, y2), (x3, y2)], np.int32).reshape((-1, 1, 2))
     cv2.polylines(img, [pts], isClosed=True, color=255, thickness=THICKNESS)
 
